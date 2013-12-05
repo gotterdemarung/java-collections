@@ -263,6 +263,14 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 
 	@Override
 	public ChainNode get(Object key) {
+		if (key == null) {
+			return null;
+		}
+		if (!containsKey(key)) {
+			ChainNode emptyNode = new ChainNode();
+			put(key.toString(), emptyNode);
+			return emptyNode;
+		}
 		return mapReference().get(key);
 	}
 
