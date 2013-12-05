@@ -14,6 +14,10 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	 */
 	protected Object value = null;
 	
+	/**
+	 * Special flag, indicating, that at the moment value of chain node is native
+	 * i.e. contains set of other ChainNodes
+	 */
 	private boolean isNative = false;
 	
 	// Constructors
@@ -42,71 +46,137 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	}
 	
 	// Validators
+	/**
+	 * Returns true if value of node is null (not just empty, but null exactly)
+	 * @return
+	 */
 	public boolean isNull()
 	{
 		return value == null;
 	}
 
+	/**
+	 * Returns true if value is boolean
+	 * @return
+	 */
 	public boolean isBool()
 	{
 		return !isNull() && value instanceof Boolean;
 	}
 	
+	/**
+	 * Returns true if value is boolean and == true
+	 * @return
+	 */
 	public boolean isTrue()
 	{
 		return isBool() && ((Boolean) value).booleanValue();
 	}
 	
+	/**
+	 * Returns true if value instance of String
+	 * 
+	 * @return
+	 */
 	public boolean isString()
 	{
 		return !isNull() && value instanceof String;
 	}
 
+	/**
+	 * Returns true if value is int
+	 * 
+	 * @return
+	 */
 	public boolean isInt()
 	{
 		return !isNull() && value instanceof Integer;
 	}
 	
+	/**
+	 * Returns true if value is long
+	 * 
+	 * @return
+	 */
 	public boolean isLong()
 	{
 		return !isNull() && (isInt() || value instanceof Long);
 	}
 	
+	/**
+	 * Returns true if value is float
+	 * @return
+	 */
 	public boolean isFloat()
 	{
 		return !isNull() && value instanceof Float;
 	}
 	
+	/**
+	 * Returns true if value is double
+	 * 
+	 * @return
+	 */
 	public boolean isDouble()
 	{
 		return !isNull() && (isFloat() || value instanceof Double);
 	}
 	
+	/**
+	 * Returns true if ChainNode content can be iterated in foreach statement
+	 * 
+	 * @return
+	 */
 	public boolean isIterable()
 	{
 		return !isNull() && value instanceof Iterable<?>;
 	}
 	
+	/**
+	 * Returns true if ChainNode content is Collection
+	 * 
+	 * @return
+	 */
 	public boolean isCollection()
 	{
 		return !isNull() && value instanceof Collection<?>;
 	}
 	
+	/**
+	 * Returns true if ChainNode content is hash map
+	 * 
+	 * @return
+	 */
 	public boolean isMap()
 	{
 		return !isNull() && value instanceof Map<?,?>;
 	}
 	
+	/**
+	 * Returns true if ChainNode content is ChainNode
+	 * 
+	 * @return
+	 */
 	public boolean isChainNode()
 	{
 		return !isNull() && value instanceof ChainNode;
 	}
 	
+	/**
+	 * Returns true if ChainNode contains list of other ChainNodes
+	 * 
+	 * @return
+	 */
 	public boolean isChainNodeIterable()
 	{
 		return isNative && isIterable();
 	}
 	
+	/**
+	 * Returns true if ChainNode is hash map
+	 * 
+	 * @return
+	 */
 	public boolean isChainNodeMap()
 	{
 		return isNative && isMap();
@@ -160,6 +230,15 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	{
 		this.value = value;
 		this.isNative = false;
+		return this;
+	}
+	public ChainNode set(String key, Object value)
+	{
+		if (value instanceof ChainNode) {
+			put(key, (ChainNode) value);
+		} else {
+			put(key, new ChainNode(value));
+		}
 		return this;
 	}
 
