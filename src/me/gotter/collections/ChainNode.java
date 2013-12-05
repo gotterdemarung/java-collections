@@ -225,6 +225,52 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 		return ((Double) value).doubleValue();
 	}
 	
+	/**
+	 * Returns node by path, provided dot-separated string
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public ChainNode path(String path)
+	{
+		if (path == null || path.length() == 0) {
+			throw new NullPointerException();
+		}
+		
+		return path(path.split("\\."));
+	}
+	
+	/**
+	 * Returns node by path, provided as string array
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public ChainNode path(String[] path) 
+	{
+		if (path == null || path.length == 0) {
+			throw new NullPointerException();
+		}
+		
+		return path(path, 0);
+	}
+	
+	/**
+	 * Internal method to perform path-search
+	 * 
+	 * @param path
+	 * @param offset
+	 * @return
+	 */
+	protected ChainNode path(String[] path, int offset)
+	{
+		if (path.length - 1 == offset) {
+			return get(path[offset]);
+		}
+		
+		return get(path[offset]).path(path, offset+1);
+	}
+	
 	// Setter
 	public ChainNode set(Object value)
 	{
@@ -264,7 +310,7 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	@Override
 	public ChainNode get(Object key) {
 		if (key == null) {
-			return null;
+			throw new NullPointerException();
 		}
 		if (!containsKey(key)) {
 			ChainNode emptyNode = new ChainNode();
