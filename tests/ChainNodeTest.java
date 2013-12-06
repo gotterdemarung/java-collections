@@ -3,6 +3,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import me.gotter.collections.ChainNode;
 
@@ -143,4 +144,53 @@ public class ChainNodeTest {
 		assertEquals(new Integer(5).hashCode(), new ChainNode(5).hashCode());
 		assertEquals(new Float(5).hashCode(), new ChainNode(5f).hashCode());
 	}
+	
+	@Test
+	public void testSetter()
+	{
+		ChainNode x = new ChainNode();
+		assertTrue(x.set(5).isInt());
+		assertTrue(x.set("5").isString());
+	}
+	
+	@Test
+	public void testMap()
+	{
+		ChainNode x = new ChainNode();
+		assertFalse(x.isMap());
+		assertTrue(x.isEmpty());
+		assertEquals(0, x.size());
+		
+		x.set("user", "gotterdemarung");
+		x.set("userId", 276351);
+				
+		assertEquals(2, x.size());
+		assertFalse(x.isEmpty());
+		assertTrue(x.isMap());
+		assertTrue(x.isChainNodeMap());
+		assertTrue(x.isIterable());
+		
+		assertTrue(x.get("userId").isInt());
+		assertTrue(x.get("user").isString());
+		
+		assertTrue(x.containsKey("user"));
+		assertFalse(x.containsKey("password"));
+		
+		assertFalse(x.containsKey("access"));
+		x.put("access", new ChainNode(true));
+		assertEquals(3, x.size());
+		assertTrue(x.containsKey("access"));
+		assertTrue(x.get("access").isTrue());
+		x.remove("access");
+		assertEquals(2, x.size());
+		assertFalse(x.containsKey("access"));
+		
+		try {
+			x.containsValue("some");
+			fail("Expecting exception");
+		} catch (RuntimeException e) {
+			assertTrue(true);
+		}
+	}
+	
 }
