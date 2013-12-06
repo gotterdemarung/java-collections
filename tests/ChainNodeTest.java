@@ -193,4 +193,37 @@ public class ChainNodeTest {
 		}
 	}
 	
+	@Test
+	public void testPath()
+	{
+		ChainNode x = new ChainNode();
+		x.set("level11", true);
+		x.set("level12", new ChainNode());
+		x.get("level12").set("level2", new ChainNode());
+		x.get("level12").get("level2").set("integer", 354);
+		
+		assertTrue(x.path("level11").isTrue());
+		assertTrue(x.path("level12.level2.integer").equals(354));
+	}
+	
+	@Test
+	public void testIterator()
+	{
+		ChainNode x = new ChainNode();
+		
+		x.set(new String[]{"one", "two", "three"});
+		assertFalse(x.isMap());
+		assertTrue(x.isIterable());
+		assertEquals(3, x.size());
+		
+		boolean one = false, two = false, three = false;
+		for (ChainNode c : x) {
+			if (c.equals("one")) one = true;
+			if (c.equals("two")) two = true;
+			if (c.equals("three")) three = true;
+		}
+		assertTrue(one && two && three);
+		
+	}
+	
 }
