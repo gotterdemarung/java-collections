@@ -129,7 +129,7 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	 */
 	public boolean isIterable()
 	{
-		return !isNull() && (isMap() || value instanceof Iterable<?>);
+		return !isNull() && (isMap() || value instanceof Object[] || value instanceof Iterable<?>);
 	}
 	
 	/**
@@ -352,6 +352,9 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 		}
 		if (isMap()) {
 			return ((Map<?,?>) value).size(); 
+		}
+		if (value instanceof Object[]) {
+			return ((Object[]) value).length;
 		}
 		
 		return 1;
