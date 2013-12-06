@@ -129,7 +129,7 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	 */
 	public boolean isIterable()
 	{
-		return !isNull() && value instanceof Iterable<?>;
+		return !isNull() && (isMap() || value instanceof Iterable<?>);
 	}
 	
 	/**
@@ -184,7 +184,7 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	
 	
 	// Getters
-	public Object getValue()
+	public Object get()
 	{
 		return value;
 	}
@@ -304,7 +304,7 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 
 	@Override
 	public boolean containsValue(Object value) {
-		return mapReference().containsValue(value);
+		throw new RuntimeException("Not implemented");
 	}
 
 	@Override
@@ -408,7 +408,7 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 		if (isNull()) {
 			return "";
 		}
-		return getValue().toString();
+		return get().toString();
 	}
 	
 	@Override
@@ -418,7 +418,7 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 			return 0;
 		}
 		
-		return getValue().hashCode();
+		return get().hashCode();
 	}
 
 	@Override
