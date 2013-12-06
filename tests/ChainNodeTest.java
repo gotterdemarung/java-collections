@@ -68,6 +68,24 @@ public class ChainNodeTest {
 	}
 	
 	@Test
+	public void testEquals()
+	{
+		assertTrue(new ChainNode().equals(null));
+		
+		assertTrue(new ChainNode(true).equals(true));
+		assertFalse(new ChainNode(true).equals(false));
+		assertFalse(new ChainNode(true).equals(1));
+		
+		assertTrue(new ChainNode(22).equals(22));
+		assertTrue(new ChainNode(33f).equals(33f));
+		
+		assertTrue(new ChainNode("str").equals("str"));
+		assertTrue(new ChainNode("str").equals(new ChainNode("str")));
+		assertFalse(new ChainNode("str").equals(true));
+	}
+	
+	
+	@Test
 	public void testInt()
 	{
 		assertTrue((new ChainNode(5)).isInt());
