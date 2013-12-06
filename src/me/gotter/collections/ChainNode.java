@@ -427,11 +427,14 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	@Override
 	public boolean equals(Object o)
 	{
-		ChainNode cn = new ChainNode(o);
-		if (this.value == null) {
-			return cn.value == null;
+		if (o == null) {
+			return this.value == null;
 		}
 		
-		return this.value.equals(o);
+		if (o instanceof ChainNode) {
+			return this.value.equals(((ChainNode) o).value);
+		} else {
+			return this.value.equals(o);
+		}
 	}
 }
