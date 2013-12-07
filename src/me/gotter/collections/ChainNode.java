@@ -500,9 +500,9 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 		}
 		if (o instanceof ChainNode) {
 			ChainNode cn = (ChainNode) o;
-			return valueObject.equals(cn.valueObject)
-					|| valueArray.equals(cn.valueArray)
-					|| valueHash.equals(cn.valueHash);
+			return (valueObject != null && valueObject.equals(cn.valueObject))
+					|| (valueArray != null && valueArray.equals(cn.valueArray))
+					|| (valueHash != null && valueHash.equals(cn.valueHash));
 		}
 		
 		return this.equals(new ChainNode(o));
