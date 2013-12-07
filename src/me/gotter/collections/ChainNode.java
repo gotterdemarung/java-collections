@@ -1,25 +1,34 @@
 package me.gotter.collections;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 
 	/**
-	 * Internal value
+	 * Scalar internal value
+	 * Only one of the values can be set at time 
 	 */
-	protected Object value = null;
+	protected Object valueObject = null;
 	
 	/**
-	 * Special flag, indicating, that at the moment value of chain node is native
-	 * i.e. contains set of other ChainNodes
+	 * Hash table internal value
+	 * Only one of the values can be set at time
 	 */
-	private boolean isNative = false;
+	protected Map<String, ChainNode> valueHash = null;
 	
+	/**
+	 * Array internal value
+	 * Only one of the values can be set at time
+	 */
+	protected List<ChainNode> valueArray = null;
+		
 	// Constructors
 	/**
 	 * Creates new empty node
@@ -38,10 +47,11 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 		if (value instanceof ChainNode) {
 			// cloning values
 			ChainNode source = (ChainNode) value;
-			isNative = source.isNative;
-			this.value = source.value;
+			this.valueObject = source.valueObject;
+			this.valueArray = source.valueArray;
+			this.valueHash = source.valueHash;
 		} else {
-			this.value = value; 
+			this.set(value);
 		}
 	}
 	
@@ -52,16 +62,26 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	 */
 	public boolean isNull()
 	{
-		return value == null;
+		return valueObject == null && valueArray == null && valueHash == null;
 	}
 
+	/**
+	 * Returns true if value of ChainNode is scalar
+	 * 
+	 * @return
+	 */
+	protected boolean isNotNullScalar()
+	{
+		return valueObject != null;
+	}
+	
 	/**
 	 * Returns true if value is boolean
 	 * @return
 	 */
 	public boolean isBool()
 	{
-		return !isNull() && value instanceof Boolean;
+		return isNotNullScalar() && valueObject instanceof Boolean;
 	}
 	
 	/**
@@ -70,7 +90,7 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	 */
 	public boolean isTrue()
 	{
-		return isBool() && ((Boolean) value).booleanValue();
+		return isBool() && ((Boolean) valueObject).booleanValue();
 	}
 	
 	/**
@@ -80,7 +100,7 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	 */
 	public boolean isString()
 	{
-		return !isNull() && value instanceof String;
+		return isNotNullScalar() && valueObject instanceof String;
 	}
 
 	/**
@@ -90,7 +110,7 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	 */
 	public boolean isInt()
 	{
-		return !isNull() && value instanceof Integer;
+		return isNotNullScalar() && valueObject instanceof Integer;
 	}
 	
 	/**
@@ -100,7 +120,7 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	 */
 	public boolean isLong()
 	{
-		return !isNull() && (isInt() || value instanceof Long);
+		return isNotNullScalar() && (isInt() || valueObject instanceof Long);
 	}
 	
 	/**
@@ -109,7 +129,7 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	 */
 	public boolean isFloat()
 	{
-		return !isNull() && value instanceof Float;
+		return isNotNullScalar() && valueObject instanceof Float;
 	}
 	
 	/**
@@ -119,27 +139,28 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	 */
 	public boolean isDouble()
 	{
-		return !isNull() && (isFloat() || value instanceof Double);
+		return isNotNullScalar() && (isFloat() || valueObject instanceof Double);
 	}
 	
 	/**
 	 * Returns true if ChainNode content can be iterated in foreach statement
+	 * Can be either map or list
 	 * 
 	 * @return
 	 */
 	public boolean isIterable()
 	{
-		return !isNull() && (isMap() || value instanceof Object[] || value instanceof Iterable<?>);
+		return valueHash != null || valueArray != null;
 	}
 	
 	/**
-	 * Returns true if ChainNode content is Collection
+	 * Returns true if ChainNode content is list
 	 * 
 	 * @return
 	 */
-	public boolean isCollection()
+	public boolean isList()
 	{
-		return !isNull() && value instanceof Collection<?>;
+		return valueArray != null;
 	}
 	
 	/**
@@ -149,7 +170,7 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	 */
 	public boolean isMap()
 	{
-		return !isNull() && value instanceof Map<?,?>;
+		return valueHash != null;
 	}
 	
 	/**
@@ -159,49 +180,29 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	 */
 	public boolean isChainNode()
 	{
-		return !isNull() && value instanceof ChainNode;
-	}
-	
-	/**
-	 * Returns true if ChainNode contains list of other ChainNodes
-	 * 
-	 * @return
-	 */
-	public boolean isChainNodeIterable()
-	{
-		return isNative && isIterable();
-	}
-	
-	/**
-	 * Returns true if ChainNode is hash map
-	 * 
-	 * @return
-	 */
-	public boolean isChainNodeMap()
-	{
-		return isNative && isMap();
+		return !isNull() && valueObject instanceof ChainNode;
 	}
 	
 	
 	// Getters
 	public Object get()
 	{
-		return value;
+		return valueObject;
 	}
 	
 	public boolean getBool()
 	{
-		return ((Boolean) value).booleanValue();
+		return ((Boolean) valueObject).booleanValue();
 	}
 	
 	public String getString()
 	{
-		return value.toString();
+		return valueObject.toString();
 	}
 	
 	public int getInt()
 	{
-		return ((Integer) value).intValue();
+		return ((Integer) valueObject).intValue();
 	}
 	
 	public long getLong()
@@ -209,12 +210,12 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 		if (isInt()) {
 			return getInt();
 		}
-		return ((Long) value).longValue();
+		return ((Long) valueObject).longValue();
 	}
 	
 	public float getFloat()
 	{
-		return ((Float) value).floatValue();
+		return ((Float) valueObject).floatValue();
 	}
 	
 	public double getDouble()
@@ -222,7 +223,7 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 		if (isFloat()) {
 			return getFloat();
 		}
-		return ((Double) value).doubleValue();
+		return ((Double) valueObject).doubleValue();
 	}
 	
 	/**
@@ -274,12 +275,44 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	// Setter
 	public ChainNode set(Object value)
 	{
-		this.value = value;
-		this.isNative = false;
+		// Erasing
+		clear();
+		
+		// Setting new value
+		if (value == null) {
+			// Do nothing
+		} else if (value instanceof Object[]) {
+			this.valueArray = new ArrayList<ChainNode>();
+			for (Object o : (Object[]) value) {
+				this.valueArray.add(new ChainNode(o));
+			}
+		} else if (value instanceof Collection<?>) {
+			this.valueArray = new ArrayList<ChainNode>();
+			for (Object o : (Collection<?>) value) {
+				this.valueArray.add(new ChainNode(o));
+			}
+		} else if (value instanceof HashMap<?, ?>) {
+			this.valueHash = new HashMap<String, ChainNode>();
+			HashMap<?,?> hm = (HashMap<?, ?>) value;
+			for (Object key : hm.keySet()) {
+				this.valueHash.put(key.toString(), new ChainNode(value));
+			}
+		} else {
+			this.valueObject = value;
+		}
 		return this;
 	}
 	public ChainNode set(String key, Object value)
 	{
+		if (isNull()) {
+			// Creating
+			this.valueHash = new HashMap<String, ChainNode>();
+		}
+		
+		if (!isMap()) {
+			throw new RuntimeException("ChainNode is not map");
+		}
+		
 		if (value instanceof ChainNode) {
 			put(key, (ChainNode) value);
 		} else {
@@ -291,7 +324,9 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	// Map interface 	
 	@Override
 	public void clear() {
-		value = null;
+		valueObject = null;
+		valueArray = null;
+		valueHash = null;
 	}
 	
 	@Override
@@ -299,7 +334,10 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 		if (key == null) {
 			return false;
 		}
-		return mapReference().containsKey(key);
+		if (!isMap()) {
+			return false;
+		}
+		return valueHash.containsKey(key);
 	}
 
 	@Override
@@ -312,37 +350,73 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 		if (key == null) {
 			throw new NullPointerException();
 		}
+		if (isNull()) {
+			valueHash = new HashMap<String, ChainNode>();
+		}
+		if (!isMap()) {
+			throw new RuntimeException("ChainNode not a map");
+		}
 		if (!containsKey(key)) {
 			ChainNode emptyNode = new ChainNode();
 			put(key.toString(), emptyNode);
 			return emptyNode;
 		}
-		return mapReference().get(key);
+		return valueHash.get(key);
 	}
 
 	@Override
 	public ChainNode put(String key, ChainNode value) {
-		return mapReference().put(key, value);
+		if (isNull()) {
+			valueHash = new HashMap<String, ChainNode>();
+		}
+		if (!isMap()) {
+			throw new RuntimeException("ChainNode not a map");
+		}
+		return valueHash.put(key, value);
 	}
 
 	@Override
 	public void putAll(Map<? extends String, ? extends ChainNode> m) {
-		mapReference().putAll(m);
+		if (isNull()) {
+			valueHash = new HashMap<String, ChainNode>();
+		}
+		if (!isMap()) {
+			throw new RuntimeException("ChainNode not a map");
+		}
+		valueHash.putAll(m);
 	}
 
 	@Override
 	public Set<String> keySet() {
-		return mapReference().keySet();
+		if (isNull()) {
+			return new HashSet<String>();
+		}
+		if (!isMap()) {
+			throw new RuntimeException("ChainNode not a map");
+		}
+		return valueHash.keySet();
 	}
 
 	@Override
 	public Collection<ChainNode> values() {
-		return mapReference().values();
+		if (isList()) {
+			return valueArray;
+		}
+		if (isMap()) {
+			return valueHash.values();
+		}
+		return new HashSet<ChainNode>();
 	}
 
 	@Override
 	public Set<java.util.Map.Entry<String, ChainNode>> entrySet() {
-		return mapReference().entrySet();
+		if (isNull()) {
+			this.valueHash = new HashMap<String, ChainNode>();
+		}
+		if (!isMap()) {
+			throw new RuntimeException("Chain node not a map");
+		}
+		return valueHash.entrySet();
 	}
 	
 	@Override
@@ -351,10 +425,10 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 			return 0;
 		}
 		if (isMap()) {
-			return ((Map<?,?>) value).size(); 
+			return valueHash.size(); 
 		}
-		if (value instanceof Object[]) {
-			return ((Object[]) value).length;
+		if (isList()) {
+			return valueArray.size();
 		}
 		
 		return 1;
@@ -367,41 +441,26 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 
 	@Override
 	public ChainNode remove(Object key) {
-		return mapReference().remove(key);
+		if (isMap()) {
+			return valueHash.remove(key);
+		}
+		return null;
 	}
 	
 	// Iterator
-	@SuppressWarnings("unchecked")
 	@Override
 	public Iterator<ChainNode> iterator() {
-		if (isNull()) {
-			throw new RuntimeException("Node is empty");
-		}
 		if (!isIterable()) {
-			return Arrays.asList(new ChainNode(this.value)).iterator();
+			throw new RuntimeException("Not iterable");
 		}
-		if (isChainNodeMap()) {
-			return ((Map<String, ChainNode>) value).values().iterator();
+		if (valueArray != null) {
+			return valueArray.iterator();
+		}
+		if (valueHash != null) {
+			return valueHash.values().iterator();
 		}
 		
-		return ((Iterable<ChainNode>) value).iterator();
-	}
-	
-	
-	// Internal helpers
-	@SuppressWarnings("unchecked")
-	private Map<String, ChainNode> mapReference()
-	{
-		if (isChainNodeMap()){
-			// Already done
-		} 
-		else if (isNull()) {
-			value = new HashMap<String, ChainNode>();
-			isNative = true;
-		} else {
-			throw new RuntimeException("Cannot create map for " + value.getClass());
-		}
-		return (Map<String, ChainNode>) value;
+		throw new RuntimeException();
 	}
 	
 	// Java core
@@ -417,24 +476,35 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode>{
 	@Override
 	public int hashCode()
 	{
-		if (isNull()) {
-			return 0;
+		if (valueObject != null) {
+			return valueObject.hashCode();
+		}
+		if (valueArray != null) {
+			return valueArray.hashCode();
+		}
+		if (valueHash != null) {
+			return valueHash.hashCode();
 		}
 		
-		return get().hashCode();
+		return 0;
 	}
 
 	@Override
 	public boolean equals(Object o)
 	{
-		if (o == null) {
-			return this.value == null;
+		if (isNull() && o == null) {
+			return true;
+		}
+		if (isNull() && o != null) {
+			return false;
+		}
+		if (o instanceof ChainNode) {
+			ChainNode cn = (ChainNode) o;
+			return valueObject.equals(cn.valueObject)
+					|| valueArray.equals(cn.valueArray)
+					|| valueHash.equals(cn.valueHash);
 		}
 		
-		if (o instanceof ChainNode) {
-			return this.value.equals(((ChainNode) o).value);
-		} else {
-			return this.value.equals(o);
-		}
+		return this.equals(new ChainNode(o));
 	}
 }

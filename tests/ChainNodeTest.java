@@ -26,7 +26,7 @@ public class ChainNodeTest {
 		assertFalse(x.isDouble());
 		assertFalse(x.isChainNode());
 		assertFalse(x.isIterable());
-		assertFalse(x.isCollection());
+		assertFalse(x.isList());
 		assertFalse(x.isMap());
 
 		x = new ChainNode(null);
@@ -41,7 +41,7 @@ public class ChainNodeTest {
 		assertFalse(x.isDouble());
 		assertFalse(x.isChainNode());
 		assertFalse(x.isIterable());
-		assertFalse(x.isCollection());
+		assertFalse(x.isList());
 		assertFalse(x.isMap());
 	}
 
@@ -185,7 +185,6 @@ public class ChainNodeTest {
 		assertEquals(2, x.size());
 		assertFalse(x.isEmpty());
 		assertTrue(x.isMap());
-		assertTrue(x.isChainNodeMap());
 		assertTrue(x.isIterable());
 		
 		assertTrue(x.get("userId").isInt());
