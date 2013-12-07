@@ -24,7 +24,6 @@ public class ChainNodeTest {
 		assertFalse(x.isString());
 		assertFalse(x.isFloat());
 		assertFalse(x.isDouble());
-		assertFalse(x.isChainNode());
 		assertFalse(x.isIterable());
 		assertFalse(x.isList());
 		assertFalse(x.isMap());
@@ -39,7 +38,6 @@ public class ChainNodeTest {
 		assertFalse(x.isString());
 		assertFalse(x.isFloat());
 		assertFalse(x.isDouble());
-		assertFalse(x.isChainNode());
 		assertFalse(x.isIterable());
 		assertFalse(x.isList());
 		assertFalse(x.isMap());
