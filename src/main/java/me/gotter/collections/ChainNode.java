@@ -41,7 +41,7 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode> {
 	/**
 	 * Creates new node with provided object as value
 	 * 
-	 * @param value
+	 * @param value data
 	 */
 	public ChainNode(Object value) {
 		if (value instanceof ChainNode) {
@@ -57,81 +57,63 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode> {
 
 	/////////////////////////     Validators    /////////////////////////
 	/**
-	 * Returns true if value of node is null (not just empty, but null exactly)
-	 * 
-	 * @return
+	 * @return True if value of node is null (not just empty, but null exactly)
 	 */
 	public boolean isNull() {
 		return valueObject == null && valueArray == null && valueHash == null;
 	}
 
 	/**
-	 * Returns true if value of ChainNode is scalar
-	 * 
-	 * @return
+	 * @return True if value of ChainNode is scalar
 	 */
 	protected boolean isNotNullScalar() {
 		return valueObject != null;
 	}
 
 	/**
-	 * Returns true if value is boolean
-	 * 
-	 * @return
+	 * @return True if value is boolean
 	 */
 	public boolean isBool() {
 		return isNotNullScalar() && valueObject instanceof Boolean;
 	}
 
 	/**
-	 * Returns true if value is boolean and == true
-	 * 
-	 * @return
+	 * @return True if value is boolean and == true
 	 */
 	public boolean isTrue() {
-		return isBool() && ((Boolean) valueObject).booleanValue();
+		return isBool() && getBool();
 	}
 
 	/**
-	 * Returns true if value instance of String
-	 * 
-	 * @return
+	 * @return True if value instance of String
 	 */
 	public boolean isString() {
 		return isNotNullScalar() && valueObject instanceof String;
 	}
 
 	/**
-	 * Returns true if value is int
-	 * 
-	 * @return
+	 * @return True if value is int
 	 */
 	public boolean isInt() {
 		return isNotNullScalar() && valueObject instanceof Integer;
 	}
 
 	/**
-	 * Returns true if value is long
-	 * 
-	 * @return
+s	 * @return True if value is long
 	 */
 	public boolean isLong() {
 		return isNotNullScalar() && (isInt() || valueObject instanceof Long);
 	}
 
 	/**
-	 * Returns true if value is float
-	 * 
-	 * @return
+	 * @return True if value is float
 	 */
 	public boolean isFloat() {
 		return isNotNullScalar() && valueObject instanceof Float;
 	}
 
 	/**
-	 * Returns true if value is double
-	 * 
-	 * @return
+	 * @return True if value is double
 	 */
 	public boolean isDouble() {
 		return isNotNullScalar()
@@ -142,25 +124,21 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode> {
 	 * Returns true if ChainNode content can be iterated in foreach statement
 	 * Can be either map or list
 	 * 
-	 * @return
+	 * @return Check result
 	 */
 	public boolean isIterable() {
 		return valueHash != null || valueArray != null;
 	}
 
 	/**
-	 * Returns true if ChainNode content is list
-	 * 
-	 * @return
+	 * @return True if ChainNode content is list
 	 */
 	public boolean isList() {
 		return valueArray != null;
 	}
 
 	/**
-	 * Returns true if ChainNode content is hash map
-	 * 
-	 * @return
+	 * @return True if ChainNode content is hash map
 	 */
 	public boolean isMap() {
 		return valueHash != null;
@@ -168,27 +146,21 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode> {
 
 	/////////////////////////    Getters    /////////////////////////
 	/**
-	 * Returns value, contained in ChainNode
-	 * 
-	 * @return
+	 * @return value, contained in ChainNode
 	 */
 	public Object get() {
 		return valueObject;
 	}
 
 	/**
-	 * Returns boolean value, stored in ChainNode
-	 * 
-	 * @return
+	 * @return boolean value, stored in ChainNode
 	 */
 	public boolean getBool() {
-		return ((Boolean) valueObject).booleanValue();
+		return (Boolean) valueObject;
 	}
 
 	/**
-	 * Returns toString representation of the content of ChainNode
-	 * 
-	 * @return
+	 * @return toString representation of the content of ChainNode
 	 */
 	public String getString() {
 		if (isNull()) {
@@ -198,52 +170,44 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode> {
 	}
 
 	/**
-	 * Returns integer value, stored in ChainNode
-	 * 
-	 * @return
+	 * @return integer value, stored in ChainNode
 	 */
 	public int getInt() {
-		return ((Integer) valueObject).intValue();
+		return (Integer) valueObject;
 	}
 
 	/**
-	 * Returns long or integer value, stored in ChainNode
-	 * 
-	 * @return
+	 * @return long or integer value, stored in ChainNode
 	 */
 	public long getLong() {
 		if (isInt()) {
 			return getInt();
 		}
-		return ((Long) valueObject).longValue();
+		return (Long) valueObject;
 	}
 
 	/**
-	 * Returns float value, stored in ChainNode
-	 * 
-	 * @return
+	 * @return float value, stored in ChainNode
 	 */
 	public float getFloat() {
-		return ((Float) valueObject).floatValue();
+		return (Float) valueObject;
 	}
 
 	/**
-	 * Returns float or double value, stored in ChainNode 
-	 * 
-	 * @return
+	 * @return float or double value, stored in ChainNode
 	 */
 	public double getDouble() {
 		if (isFloat()) {
 			return getFloat();
 		}
-		return ((Double) valueObject).doubleValue();
+		return (Double) valueObject;
 	}
 
 	/**
 	 * Returns node by path, provided dot-separated string
 	 * 
-	 * @param path
-	 * @return
+	 * @param path Dot-separated path
+	 * @return node
 	 */
 	public ChainNode path(String path) {
 		if (path == null || path.length() == 0) {
@@ -256,8 +220,8 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode> {
 	/**
 	 * Returns node by path, provided as string array
 	 * 
-	 * @param path
-	 * @return
+	 * @param path Array path
+	 * @return node
 	 */
 	public ChainNode path(String[] path) {
 		if (path == null || path.length == 0) {
@@ -270,9 +234,9 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode> {
 	/**
 	 * Internal method to perform path-search
 	 * 
-	 * @param path
-	 * @param offset
-	 * @return
+	 * @param path Path
+	 * @param offset Offset
+	 * @return node
 	 */
 	protected ChainNode path(String[] path, int offset) {
 		if (path.length - 1 == offset) {
@@ -286,8 +250,8 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode> {
 	/**
 	 * Replaces value of the node with provided one
 	 * 
-	 * @param value
-	 * @return
+	 * @param value Value
+	 * @return Current node
 	 */
 	public ChainNode set(Object value) {
 		// Erasing
@@ -295,7 +259,7 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode> {
 
 		// Setting new value
 		if (value == null) {
-			// Do nothing
+			this.valueObject = null;
 		} else if (value instanceof Object[]) {
 			this.valueArray = new ArrayList<ChainNode>();
 			for (Object o : (Object[]) value) {
@@ -321,9 +285,9 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode> {
 	/**
 	 * If ChainNode is a map, replaces or sets value by its key
 	 * 
-	 * @param key
-	 * @param value
-	 * @return
+	 * @param key   Key
+	 * @param value Value
+	 * @return Current node
 	 */
 	public ChainNode set(String key, Object value) {
 		if (isNull()) {
@@ -357,14 +321,11 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode> {
 
 	@Override
 	public boolean containsKey(Object key) {
-		if (key == null) {
-			return false;
-		}
-		if (!isMap()) {
-			return false;
-		}
-		return valueHash.containsKey(key);
-	}
+        return key != null
+                && isMap()
+                && valueHash.containsKey(key)
+        ;
+    }
 
 	@Override
 	public boolean containsValue(Object value) {
@@ -401,7 +362,8 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode> {
 		return valueHash.put(key, value);
 	}
 
-	@Override
+	@SuppressWarnings("NullableProblems")
+    @Override
 	public void putAll(Map<? extends String, ? extends ChainNode> m) {
 		if (isNull()) {
 			valueHash = new HashMap<String, ChainNode>();
@@ -412,7 +374,8 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode> {
 		valueHash.putAll(m);
 	}
 
-	@Override
+	@SuppressWarnings("NullableProblems")
+    @Override
 	public Set<String> keySet() {
 		if (isNull()) {
 			return new HashSet<String>();
@@ -423,7 +386,8 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode> {
 		return valueHash.keySet();
 	}
 
-	@Override
+	@SuppressWarnings("NullableProblems")
+    @Override
 	public Collection<ChainNode> values() {
 		if (isList()) {
 			return valueArray;
@@ -434,7 +398,8 @@ public class ChainNode implements Map<String, ChainNode>, Iterable<ChainNode> {
 		return new HashSet<ChainNode>();
 	}
 
-	@Override
+	@SuppressWarnings("NullableProblems")
+    @Override
 	public Set<java.util.Map.Entry<String, ChainNode>> entrySet() {
 		if (isNull()) {
 			this.valueHash = new HashMap<String, ChainNode>();
