@@ -1,13 +1,8 @@
 package me.gotter.collections;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import me.gotter.collections.util.ChainNodeJsonSerializer;
+
+import java.util.*;
 
 /**
  * Special collection, containing either hash map, either list, either plain
@@ -247,6 +242,26 @@ s	 * @return True if value is long
 	}
 
 	/////////////////////////    Setter    /////////////////////////
+
+    /**
+     * Traits current node as list and adds object to it
+     *
+     * @param value Object to add
+     * @return Current node
+     * @throws IllegalStateException if not a list
+     */
+    public ChainNode add(Object value) {
+        if (isEmpty()) {
+            clear();
+            valueArray = new LinkedList<ChainNode>();
+        } else if (!isList()) {
+            throw new IllegalStateException("Not a list");
+        }
+
+        valueArray.add(new ChainNode(value));
+        return this;
+    }
+
 	/**
 	 * Replaces value of the node with provided one
 	 * 
@@ -437,6 +452,12 @@ s	 * @return True if value is long
 		}
 		return null;
 	}
+    /////////////////////////   Serialization helper   /////////////////////////
+    public String toJSON()
+    {
+        return ChainNodeJsonSerializer.serialize(this);
+    }
+
 
 	/////////////////////////    Iterator interface    /////////////////////////
 	@Override

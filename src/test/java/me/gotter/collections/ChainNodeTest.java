@@ -238,7 +238,22 @@ public class ChainNodeTest {
 			if (c.equals("three")) three = true;
 		}
 		assertTrue(one && two && three);
-		
+
+        x = new ChainNode();
+        x.add("one");
+        x.add("two");
+        x.add(3);
+        assertFalse(x.isMap());
+        assertTrue(x.isIterable());
+        assertEquals(3, x.size());
+
+        one = false; two = false; three = false;
+        for (ChainNode c : x) {
+            if (c.equals("one")) one = true;
+            if (c.equals("two")) two = true;
+            if (c.equals(3)) three = true;
+        }
+        assertTrue(one && two && three);
 	}
 	
 }
